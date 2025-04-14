@@ -168,3 +168,51 @@ export async function deleteCurrentUser() {
     return { success: false, message: "Failed to delete account" };
   }
 }
+
+export async function getUserByUsername(username: string) {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { username },
+      select: {
+        id: true,
+        username: true,
+        name: true,
+        image: true,
+        bio: true,
+        location: true,
+        website: true,
+        createdAt: true,
+      },
+    });
+
+    return user;
+  } catch (error) {
+    console.log("Error in getUserByUsername", error);
+    return null;
+  }
+}
+
+export async function updateCurrentUserProfile(data: {
+  name?: string;
+  bio?: string;
+  location?: string;
+  website?: string;
+  image?: string;
+}) {
+  try {
+    const { userId } = await auth();
+    if (!userId) return null;
+
+    const updatedUser = await prisma.user.update({
+      where: {
+        clerkId: userId,
+      },
+      data,
+    });
+
+    return updatedUser;
+  } catch (error) {
+    console.log("Error in updateCurrentUserProfile", error);
+    return null;
+  }
+}
