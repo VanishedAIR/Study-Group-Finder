@@ -1,0 +1,18 @@
+import { NextResponse } from "next/server";
+import { searchSubjects } from "@/actions/useractions"; 
+
+export async function POST(req: Request) {
+  try {
+    const { searches } = await req.json();
+
+    if (!searches || typeof searches !== "string") {
+      return NextResponse.json([], { status: 400 });
+    }
+
+    const results = await searchSubjects(searches);
+    return NextResponse.json(results);
+  } catch (error) {
+    console.error("API Search Error:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
+}

@@ -216,3 +216,28 @@ export async function updateCurrentUserProfile(data: {
     return null;
   }
 }
+// Function to search for study groups by subject
+export async function searchSubjects(searches: string) {
+  try {
+    if (!searches) return [];
+
+    const results = await prisma.studyGroup.findMany({
+      where: {
+        subject: {
+          // We are searching within the subject field for matching searches.
+          contains: searches,
+          mode: "insensitive", // Case-insensitive search.
+        },
+      },
+      take: 10, // Limit the results to 10 study groups.
+      include: {
+        owner: { select: { username: true, image: true } }, // Optional: Include the owner of the study group.
+      },
+    });
+
+    return results;
+  } catch (error) {
+    console.log("Error in searchSubjects", error);
+    return [];
+  }
+}
